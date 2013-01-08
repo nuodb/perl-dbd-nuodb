@@ -1,0 +1,8 @@
+Makefile
+NuoDB.bs
+NuoDB.c
+NuoDB.o
+blib/
+dbdimp.o
+pm_to_blib
+.idea/
