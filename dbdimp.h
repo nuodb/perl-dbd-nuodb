@@ -1,7 +1,11 @@
 #include <DBIXS.h>
 
-#undef dNOOP
-#define dNOOP extern int __attribute__ ((unused)) Perl___notused
+#ifdef _MSC_VER
+	#undef close
+#else
+	#undef dNOOP
+	#define dNOOP extern int __attribute__ ((unused)) Perl___notused
+#endif
 
 #include "Connection.h"
 #include "ParameterMetaData.h"
