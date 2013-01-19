@@ -1,5 +1,7 @@
 # Perl DBI DBD Module for NuoDB #
 
+[![Build Status](https://api.travis-ci.org/nuodb/perl-dbd-nuodb.png?branch=master)](http://travis-ci.org/nuodb/perl-dbd-nuodb)
+
 This project implements a NuoDB DBD Module for Perl DBI.
 
 ## KNOWN LIMITATIONS
