@@ -1,7 +1,7 @@
-language: perl
+language: java
 
-perl:
-  - "5.16"
+jdk:
+  - openjdk7
 
 env:
   - NUODB_ROOT=/opt/nuodb NUODB_INCLUDE_DIR=/opt/nuodb/include NUODB_LIB_DIR=/opt/nuodb/lib64
@@ -12,6 +12,7 @@ notifications:
     - rbuck@nuodb.com
 
 before_install:
+  - sudo apt-get install perl
   - wget -q http://www.nuodb.com/latest/nuodb-1.0-GA.linux.x86_64.deb --output-document=/var/tmp/nuodb.deb
   - sudo dpkg -i /var/tmp/nuodb.deb
   - sleep 2
