@@ -22,7 +22,7 @@ before_install:
   - sleep 2
 
 script:
-  - perl Makefile.PL
+  - perl Makefile.PL --nuodb_includes=${NUODB_INCLUDE_DIR} --nuodb_libs=${NUODB_LIB_DIR}
   - make test
 
 after_script:
