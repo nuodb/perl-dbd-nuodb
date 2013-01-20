@@ -10,7 +10,7 @@ my $opt_result = GetOptions (
 );
 
 $nuodb_includes = '/opt/nuodb/include' if not defined $nuodb_includes;
-$nuodb_libs = '/opt/nuodb/lib' if not defined $nuodb_libs;
+$nuodb_libs = '/opt/nuodb/lib64' if not defined $nuodb_libs;
 
 print "Using: \$nuodb_includes = $nuodb_includes ; \$nuodb_libs = $nuodb_libs\n";
 
