@@ -80,3 +80,5 @@ If you make a mistake, take it back quickly:
 
 Plans are to publish the module to CPAN; documentation will be added here on that
 process.
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/4007bacad95973c7256bbdffb4eb5175 "githalytics.com")](http://githalytics.com/nuodb/perl-dbd-nuodb)
