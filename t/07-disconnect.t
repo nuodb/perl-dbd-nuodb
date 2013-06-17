@@ -4,7 +4,7 @@ use Test::More tests => 5;
 use DBI;
 my $host = defined $ENV{AGENT_PORT} ? "localhost:".$ENV{AGENT_PORT} : "localhost";
 
-my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "cloud", "user", {PrintError => 0, RaiseError => 0});
+my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "dba", "goalie", {PrintError => 0, RaiseError => 0});
 $dbh->disconnect();
 
 my $result = $dbh->selectall_arrayref("USE test");
