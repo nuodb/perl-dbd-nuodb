@@ -49,8 +49,8 @@ an environment to test the module:
 
     NUODB_ROOT=/Users/rbuck/tmp/nuodb
     java -jar ${NUODB_ROOT}/jar/nuoagent.jar --broker &
-    ${NUODB_ROOT}/bin/nuodb --chorus test --password bar --dba-user cloud --dba-password user --verbose debug --archive /var/tmp/nuodb --initialize --force &
-    ${NUODB_ROOT}/bin/nuodb --chorus test --password bar --dba-user cloud --dba-password user &
+    ${NUODB_ROOT}/bin/nuodb --chorus test --password bar --dba-user dba --dba-password goalie --verbose debug --archive /var/tmp/nuodb --initialize --force &
+    ${NUODB_ROOT}/bin/nuodb --chorus test --password bar --dba-user dba --dba-password goalie &
 
 Once NuoDB is running, run the following commands to test the module:
 
