@@ -5,7 +5,7 @@ use utf8;
 binmode STDERR, ":utf8";
 
 my $host = defined $ENV{AGENT_PORT} ? "localhost:".$ENV{AGENT_PORT} : "localhost";
-my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "cloud", "user", {PrintError => 0, PrintWarn => 0, AutoCommit => 1, schema => 'dbi'});
+my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "dba", "goalie", {PrintError => 0, PrintWarn => 0, AutoCommit => 1, schema => 'dbi'});
 
 my $utf8_string = 'Това е текст';
 my ($utf8_out, $utf8_len_chars, $utf8_len_octets) = $dbh->selectrow_array("
