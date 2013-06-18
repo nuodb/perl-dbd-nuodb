@@ -17,7 +17,7 @@ notifications:
 
 before_install:
   - sudo apt-get install perl
-  - wget -q http://www.nuodb.com/latest/releases/nuodb-${NUODB_VERSION}.linux.x86.deb --output-document=/var/tmp/nuodb.deb
+  - wget -q http://www.nuodb.com/latest/releases/nuodb-${NUODB_VERSION}.linux.x64.deb --output-document=/var/tmp/nuodb.deb
   - sudo dpkg -i /var/tmp/nuodb.deb
   - sleep 2
   - ${NUODB_ROOT}/bin/nuodb --chorus test --password bar --dba-user dba --dba-password goalie --verbose debug --archive /var/tmp/nuodb --initialize --force &
