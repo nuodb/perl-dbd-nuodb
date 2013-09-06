@@ -24,7 +24,7 @@ The following has not been implemented yet:
 Here is an example use:
 
     use DBI;
-    my $dbh = DBI->connect("dbi:NuoDB:".$database.'@'.$host':'.$port, $username, $password, {schema => $schema});
+    my $dbh = DBI->connect("dbi:NuoDB:".$database.'@'.$host.':'.$port, $username, $password, {schema => $schema});
     my $sth = $dbh->prepare("SELECT 'one' FROM DUAL");
     $sth->execute();
     my ($value) = $sth->fetchrow_array();
