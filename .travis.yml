@@ -4,8 +4,8 @@ jdk:
   - openjdk7
 
 env:
-  - NUODB_VERSION=2.1.1.10_amd64 NUODB_ROOT=/opt/nuodb NUODB_INCLUDE_DIR=/opt/nuodb/include NUODB_LIB_DIR=/opt/nuodb/lib64
-  - NUODB_VERSION=2.0.4.24_amd64 NUODB_ROOT=/opt/nuodb NUODB_INCLUDE_DIR=/opt/nuodb/include NUODB_LIB_DIR=/opt/nuodb/lib64
+  - NUODB_VERSION=2.1.1.10 NUODB_ADD_DOMAIN_PASS=yes NUODB_START_AGENT=yes
+  - NUODB_VERSION=2.0.4.24 NUODB_ADD_DOMAIN_PASS=no NUODB_START_AGENT=no
 
 notifications:
   recipients:
@@ -14,9 +14,14 @@ notifications:
 
 before_install:
   - sudo apt-get install perl
-  - wget -q http://download.nuohub.org/nuodb_${NUODB_VERSION}.deb --output-document=/var/tmp/nuodb.deb
+  - export NUODB_ROOT=/opt/nuodb
+  - export NUODB_INCLUDE_DIR=/opt/nuodb/include
+  - export NUODB_LIB_DIR=/opt/nuodb/lib64
+  - wget -q http://download.nuohub.org/nuodb_${NUODB_VERSION}_amd64.deb --output-document=/var/tmp/nuodb.deb
   - sudo dpkg -i /var/tmp/nuodb.deb
   - sleep 2
+  - if [[ "${NUODB_ADD_DOMAIN_PASS}" == "yes" ]] ; then sudo chmod 777 $NUODB_ROOT/etc/default.properties; echo "domainPassword = bird" >> $NUODB_ROOT/etc/default.properties; sudo chmod 600 $NUODB_ROOT/etc/default.properties; fi
+  - if [[ "${NUODB_START_AGENT}" == "yes" ]]; then sudo service nuoagent start; fi
   - ${NUODB_ROOT}/bin/nuodb --chorus test --password bar --dba-user dba --dba-password goalie --verbose debug --archive /var/tmp/nuodb --initialize --force &
   - sleep 2
   - ${NUODB_ROOT}/bin/nuodb --chorus test --password bar --dba-user dba --dba-password goalie &
