@@ -2,7 +2,7 @@
 
 [![Build Status](https://api.travis-ci.org/nuodb/perl-dbd-nuodb.png?branch=master)](http://travis-ci.org/nuodb/perl-dbd-nuodb)
 
-This project implements a NuoDB DBD Module for Perl DBI.
+This project implements a NuoDB DBD Module for Perl DBI. This is a community driven driver with limited support and testing from NuoDB.
 
 ## KNOWN LIMITATIONS
 
@@ -81,4 +81,6 @@ If you make a mistake, take it back quickly:
 Plans are to publish the module to CPAN; documentation will be added here on that
 process.
 
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/4007bacad95973c7256bbdffb4eb5175 "githalytics.com")](http://githalytics.com/nuodb/perl-dbd-nuodb)
+### License
+
+[NuoDB License](https://github.com/nuodb/perl-dbd-nuodb/blob/master/LICENSE)
