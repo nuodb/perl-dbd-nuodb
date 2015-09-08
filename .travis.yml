@@ -9,8 +9,7 @@ env:
 
 notifications:
   recipients:
-    - buck.robert.j@gmail.com
-    - rbuck@nuodb.com
+    - drivers@nuodb.com
 
 before_install:
   - sudo apt-get install perl
