@@ -1,4 +1,14 @@
+*~
+\#*\#
+*.diff
+*.patch
+*.orig
+*.log
+*.out
+*.old
 Makefile
+MYMETA.json
+MYMETA.yml
 NuoDB.bs
 NuoDB.c
 NuoDB.o
@@ -6,3 +16,4 @@ blib/
 dbdimp.o
 pm_to_blib
 .idea/
+.DS_Store
