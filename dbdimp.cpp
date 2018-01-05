@@ -1,4 +1,5 @@
 #include "dbdimp.h"
+#include "ProductVersion.h"
 
 DBISTATE_DECLARE;
 
@@ -26,8 +27,11 @@ int dbd_db_login6_sv(SV *dbh, imp_dbh_t *imp_dbh, SV *dbname, SV *uid, SV *pwd, 
 	hv = (HV*) SvRV(sv);
 	if (SvTYPE(hv) != SVt_PVHV)
 		return FALSE;
-
+#if NUODB_PRODUCT_VERSION_MAJOR >= 3
+	NuoDB::Connection *conn = NuoDB_createConnection();
+#else
 	NuoDB::Connection *conn = createConnection();
+#endif
 
 	if (!conn)
 		return FALSE;
@@ -50,7 +54,7 @@ int dbd_db_login6_sv(SV *dbh, imp_dbh_t *imp_dbh, SV *dbname, SV *uid, SV *pwd, 
 		DBIc_ACTIVE_on(imp_dbh);
 		DBIc_IMPSET_on(imp_dbh);
 	} catch (NuoDB::SQLException& xcp) {
-		do_error(dbh, xcp.getSqlcode(), (char *) xcp.getText());
+		do_error(dbh, xcp.getSqlcode(), xcp.getText());
 		conn->close();
 		imp_dbh->conn = NULL;
 		return FALSE;
@@ -77,7 +81,7 @@ int dbd_st_prepare_sv(SV *sth, imp_sth_t *imp_sth, SV *statement, SV *attribs)
 		NuoDB::ParameterMetaData* md = imp_sth->pstmt->getParameterMetaData();
 		DBIc_NUM_PARAMS(imp_sth) = md->getParameterCount();
 	} catch (NuoDB::SQLException& xcp) {
-		do_error(sth, xcp.getSqlcode(), (char *) xcp.getText());
+		do_error(sth, xcp.getSqlcode(), xcp.getText());
 		return FALSE;
 	}
 	
@@ -114,7 +118,7 @@ int dbd_st_execute(SV* sth, imp_sth_t* imp_sth)
 		NuoDB::ResultSetMetaData *md = imp_sth->rs->getMetaData();
 		DBIc_NUM_FIELDS(imp_sth) = md->getColumnCount();
 	} catch (NuoDB::SQLException& xcp) {
-		do_error(sth, xcp.getSqlcode(), (char *) xcp.getText());
+		do_error(sth, xcp.getSqlcode(), xcp.getText());
 		return FALSE;
 	}
 	
@@ -147,7 +151,7 @@ AV* dbd_st_fetch(SV *sth, imp_sth_t* imp_sth)
 			return Nullav;
 		}
 	} catch (NuoDB::SQLException& xcp) {
-		do_error(sth, xcp.getSqlcode(), (char *) xcp.getText());
+		do_error(sth, xcp.getSqlcode(), xcp.getText());
 	}
 
 	av = DBIc_DBISTATE(imp_sth)->get_fbav(imp_sth);
@@ -180,7 +184,7 @@ void dbd_st_destroy(SV *sth, imp_sth_t *imp_sth)
 			imp_sth->pstmt->close();
 
 	} catch (NuoDB::SQLException& xcp) {
-		do_error(sth, xcp.getSqlcode(), (char *) xcp.getText());
+		do_error(sth, xcp.getSqlcode(), xcp.getText());
 	}
 
 	DBIc_IMPSET_off(imp_sth);
@@ -205,7 +209,7 @@ const char * dbd_st_analyze(SV *sth)
 	try {
 		return imp_sth->pstmt->analyze(2);
 	} catch (NuoDB::SQLException& xcp) {
-		do_error(sth, xcp.getSqlcode(), (char *) xcp.getText());
+		do_error(sth, xcp.getSqlcode(), xcp.getText());
 		return NULL;
 	}
 }
@@ -221,7 +225,7 @@ int dbd_db_commit(SV* dbh, imp_dbh_t* imp_dbh)
 	try {
 		imp_dbh->conn->commit();
 	} catch (NuoDB::SQLException& xcp) {
-		do_error(dbh, xcp.getSqlcode(), (char *) xcp.getText());
+		do_error(dbh, xcp.getSqlcode(), xcp.getText());
 		return FALSE;
 	}
 
@@ -238,7 +242,7 @@ int dbd_db_rollback(SV* dbh, imp_dbh_t* imp_dbh)
 	try {
 		imp_dbh->conn->rollback();
 	} catch (NuoDB::SQLException& xcp) {
-		do_error(dbh, xcp.getSqlcode(), (char *) xcp.getText());
+		do_error(dbh, xcp.getSqlcode(), xcp.getText());
 		return FALSE;
 	}
 
@@ -278,7 +282,7 @@ int dbd_db_STORE_attrib(SV* dbh, imp_dbh_t* imp_dbh, SV* keysv, SV* valuesv)
 			imp_dbh->conn->setAutoCommit(bool_value);
 			DBIc_set(imp_dbh, DBIcf_AutoCommit, bool_value);
 		} catch (NuoDB::SQLException& xcp) {
-			do_error(dbh, xcp.getSqlcode(), (char *) xcp.getText());
+			do_error(dbh, xcp.getSqlcode(), xcp.getText());
 			return FALSE;
 		}
 	} else {
@@ -313,7 +317,7 @@ int dbd_db_disconnect(SV* dbh, imp_dbh_t* imp_dbh)
 		imp_dbh->conn->close();
 		imp_dbh->conn = NULL;
 	} catch (NuoDB::SQLException& xcp) {
-		do_error(dbh, xcp.getSqlcode(), (char *) xcp.getText());
+		do_error(dbh, xcp.getSqlcode(), xcp.getText());
 		return FALSE;
 	}
 
@@ -347,7 +351,7 @@ int dbd_bind_ph (SV *sth, imp_sth_t *imp_sth, SV *param, SV *value, IV sql_type,
 			imp_sth->pstmt->setString(SvIV(param), value_str);
 		}
 	} catch (NuoDB::SQLException& xcp) {
-		do_error(sth, xcp.getSqlcode(), (char *) xcp.getText());
+		do_error(sth, xcp.getSqlcode(), xcp.getText());
 		return FALSE;
 	}
 
@@ -374,7 +378,7 @@ const char * dbd_db_version(SV *dbh)
 	try {
 		return metaData->getDatabaseProductVersion();
 	} catch (NuoDB::SQLException& xcp) {
-		do_error(dbh, xcp.getSqlcode(), (char *) xcp.getText());
+		do_error(dbh, xcp.getSqlcode(), xcp.getText());
 		return NULL;
 	}
 
@@ -382,7 +386,7 @@ const char * dbd_db_version(SV *dbh)
 }
 
 
-void do_error(SV* h, int rc, char* what)
+void do_error(SV* h, int rc, const char* what)
 {
 	D_imp_xxh(h);
 

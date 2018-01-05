@@ -121,7 +121,7 @@ selectall_arrayref(...)
                 (DBD_ATTRIB_TRUE(attr,"Slice",5,tmp_svp) || DBD_ATTRIB_TRUE(attr,"Columns",7,tmp_svp))
         ) {
             /* fallback to perl implementation */
-            SV *tmp =dbixst_bounce_method("DBD::NuoDB::db::SUPER::selectall_arrayref", items);
+            SV *tmp =dbixst_bounce_method((char*)"DBD::NuoDB::db::SUPER::selectall_arrayref", items);
             SPAGAIN;
             ST(0) = tmp;
             XSRETURN(1);
@@ -136,7 +136,7 @@ selectall_arrayref(...)
             sth = mg->mg_obj;
     }
     else {
-        sth = dbixst_bounce_method("prepare", 3);
+        sth = dbixst_bounce_method((char*)"prepare", 3);
         SPAGAIN; SP -= items; /* because stack might have been realloc'd */
         if (!SvROK(sth))
             XSRETURN_UNDEF;
@@ -179,7 +179,7 @@ selectrow_arrayref(...)
     }
     else {
         /* --- prepare --- */
-        sth = dbixst_bounce_method("prepare", 3);
+        sth = dbixst_bounce_method((char*)"prepare", 3);
         SPAGAIN; SP -= items; /* because stack might have been realloc'd */
         if (!SvROK(sth)) {
             if (is_selectrow_array) { XSRETURN_EMPTY; } else { XSRETURN_UNDEF; }
@@ -401,7 +401,7 @@ take_imp_data(h)
      */
     SV *sv = dbd_take_imp_data(h, imp_xxh, NULL);
     if (SvOK(sv) && !SvTRUE(sv)) {
-        SV *tmp = dbixst_bounce_method("DBD::NuoDB::db::SUPER::take_imp_data", items);
+        SV *tmp = dbixst_bounce_method((char*)"DBD::NuoDB::db::SUPER::take_imp_data", items);
         SPAGAIN;
         ST(0) = tmp;
     } else {
@@ -654,7 +654,7 @@ fetchall_arrayref(sth, slice=&PL_sv_undef, batch_row_count=&PL_sv_undef)
     SV *        batch_row_count
     CODE:
     if (SvOK(slice)) {  /* fallback to perl implementation */
-        SV *tmp = dbixst_bounce_method("DBD::NuoDB::st::SUPER::fetchall_arrayref", 3);
+        SV *tmp = dbixst_bounce_method((char*)"DBD::NuoDB::st::SUPER::fetchall_arrayref", 3);
         SPAGAIN;
         ST(0) = tmp;
     }
