@@ -1,34 +1,43 @@
-language: java
+dist: xenial
 
-jdk:
-  - openjdk7
+language: perl
+perl:
+  - "5.26"
 
 env:
-  - NUODB_VERSION=2.1.1.10 NUODB_ADD_DOMAIN_PASS=yes NUODB_START_AGENT=yes
-  - NUODB_VERSION=2.0.4.24 NUODB_ADD_DOMAIN_PASS=no NUODB_START_AGENT=no
+  global:
+    - NUODB_HOME=/opt/nuodb
+    - TZ=America/New_York
+    - NUO_ADD_DOMAIN_PASS=yes
+    - NUO_START_AGENT=yes
+  matrix:
+    - NUO_VERSION=3.2.2.1
+    - NUO_VERSION=3.3.0.1
 
 notifications:
   recipients:
     - drivers@nuodb.com
 
 before_install:
-  - sudo apt-get install perl
-  - export NUODB_ROOT=/opt/nuodb
-  - export NUODB_INCLUDE_DIR=/opt/nuodb/include
-  - export NUODB_LIB_DIR=/opt/nuodb/lib64
-  - wget -q http://download.nuohub.org/nuodb_${NUODB_VERSION}_amd64.deb --output-document=/var/tmp/nuodb.deb
+  - echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/enabled >/dev/null
+  - echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/defrag >/dev/null
+  - wget -q "http://download.nuohub.org/nuodb-ce_${NUO_VERSION}_amd64.deb" --output-document=/var/tmp/nuodb.deb
   - sudo dpkg -i /var/tmp/nuodb.deb
-  - sleep 2
-  - if [[ "${NUODB_ADD_DOMAIN_PASS}" == "yes" ]] ; then sudo chmod 777 $NUODB_ROOT/etc/default.properties; echo "domainPassword = bird" >> $NUODB_ROOT/etc/default.properties; sudo chmod 600 $NUODB_ROOT/etc/default.properties; fi
-  - if [[ "${NUODB_START_AGENT}" == "yes" ]]; then sudo service nuoagent start; fi
-  - ${NUODB_ROOT}/bin/nuodb --chorus test --password bar --dba-user dba --dba-password goalie --verbose debug --archive /var/tmp/nuodb --initialize --force &
-  - sleep 2
-  - ${NUODB_ROOT}/bin/nuodb --chorus test --password bar --dba-user dba --dba-password goalie &
-  - sleep 2
+
+install:
+  - cpanm -v --notest --skip-satisfied DBI
+  - perl Makefile.PL --nuodb-includes="$NUODB_HOME/include" --nuodb-libs="$NUODB_HOME/lib64"
+  - make
+
+before_script:
+  - if [ "$NUO_ADD_DOMAIN_PASS" = yes ]; then printf '\ndomainPassword = bird\n' | sudo tee -a "$NUODB_HOME"/etc/default.properties >/dev/null; fi
+  - if [ "$NUO_START_AGENT" = yes ]; then sudo service nuoagent start; fi
+  - ${NUODB_HOME}/bin/nuodbmgr --broker localhost --password bird --command "start process sm database test host localhost archive /tmp/nuoarchive initialize true"
+  - ${NUODB_HOME}/bin/nuodbmgr --broker localhost --password bird --command "start process te database test host localhost options '--dba-user dba --dba-password goalie'"
 
 script:
-  - perl Makefile.PL --nuodb-includes=${NUODB_INCLUDE_DIR} --nuodb-libs=${NUODB_LIB_DIR}
   - make test
 
-after_script:
-  - sudo dpkg -r nuodb
+after_failure:
+  - cat "$NUODB_HOME"/etc/default.properties
+  - cat /var/log/nuodb/agent.log
