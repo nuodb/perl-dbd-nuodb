@@ -3,7 +3,7 @@ use Test::More tests => 10;
 BEGIN { use_ok('DBD::NuoDB') };
 
 use DBI;
-my $host = defined $ENV{AGENT_PORT} ? "localhost:".$ENV{AGENT_PORT} : "localhost";
+my $host = defined $ENV{NUODB_PORT} ? "localhost:".$ENV{NUODB_PORT} : "localhost";
 
 my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "dba", "goalie", {PrintError => 1, RaiseError => 1});
 ok(defined $dbh);
@@ -15,7 +15,7 @@ ok($DBI::errstr eq 'no NuoDB nodes are available for database "no_such_database@
 
 my $dbh_no_such_user = DBI->connect('dbi:NuoDB:test@'.$host, 'nuodbi_no_such_user', 'goalie', {PrintError => 0});
 ok($DBI::err == -13);
-ok($DBI::errstr eq '"nuodbi_no_such_user" is not a known user for database "test"');
+ok($DBI::errstr eq 'Authentication failed');
 
 my $dbh_wrong_password = DBI->connect('dbi:NuoDB:test@'.$host, 'dba', 'wrong_password', {PrintError => 0});
 ok($DBI::err == -13);

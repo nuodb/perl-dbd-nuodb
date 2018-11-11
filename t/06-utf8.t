@@ -4,7 +4,7 @@ use DBI;
 use utf8;
 binmode STDERR, ":utf8";
 
-my $host = defined $ENV{AGENT_PORT} ? "localhost:".$ENV{AGENT_PORT} : "localhost";
+my $host = defined $ENV{NUODB_PORT} ? "localhost:".$ENV{NUODB_PORT} : "localhost";
 my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "dba", "goalie", {PrintError => 0, PrintWarn => 0, AutoCommit => 1, schema => 'dbi'});
 
 my $utf8_string = 'Това е текст';

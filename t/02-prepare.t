@@ -3,7 +3,7 @@ use Test::More tests => 15;
 BEGIN { use_ok('DBD::NuoDB') };
 
 use DBI;
-my $host = defined $ENV{AGENT_PORT} ? "localhost:".$ENV{AGENT_PORT} : "localhost";
+my $host = defined $ENV{NUODB_PORT} ? "localhost:".$ENV{NUODB_PORT} : "localhost";
 my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "dba", "goalie", { PrintError => 0, schema => 'dbi' });
 
 ok(defined $dbh);
