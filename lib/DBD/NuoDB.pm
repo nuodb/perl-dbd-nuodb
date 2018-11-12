@@ -8,7 +8,7 @@ use DBI;
 
 use vars qw($VERSION $drh);
 
-$VERSION = '0.01';
+$VERSION = '1.0.1';
 
 @DBD::NuoDB::ISA = qw(DynaLoader);
 bootstrap DBD::NuoDB $VERSION;
