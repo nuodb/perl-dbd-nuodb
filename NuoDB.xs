@@ -1,3 +1,7 @@
+/* (C) Copyright NuoDB, Inc. 2012-2018
+ * Redistribution and use permitted under the terms of the 3-clause BSD license.
+ */
+
 #include "dbdimp.h"
 
 DBISTATE_DECLARE;
@@ -62,34 +66,34 @@ MODULE = DBD::NuoDB    PACKAGE = DBD::NuoDB::db
 
 const char *
 version(dbh)
-	SV* dbh
+        SV* dbh
 CODE:
-	RETVAL = dbd_db_version(dbh);
+        RETVAL = dbd_db_version(dbh);
 OUTPUT:
-	RETVAL
+        RETVAL
 
 const char *
 x_version(dbh)
-	SV* dbh
+        SV* dbh
 CODE:
-	RETVAL = dbd_db_version(dbh);
+        RETVAL = dbd_db_version(dbh);
 OUTPUT:
-	RETVAL
+        RETVAL
 
 MODULE = DBD::NuoDB    PACKAGE = DBD::NuoDB::st
 
 const char *
 analyze(sth)
-	SV* sth
+        SV* sth
 CODE:
-	RETVAL = dbd_st_analyze(sth);
+        RETVAL = dbd_st_analyze(sth);
 OUTPUT:
-	RETVAL
+        RETVAL
 
 const char *
 x_analyze(sth)
-	SV* sth
+        SV* sth
 CODE:
-	RETVAL = dbd_st_analyze(sth);
+        RETVAL = dbd_st_analyze(sth);
 OUTPUT:
-	RETVAL
+        RETVAL

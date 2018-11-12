@@ -1,38 +1,42 @@
+/* (C) Copyright NuoDB, Inc. 2012-2018
+ * Redistribution and use permitted under the terms of the 3-clause BSD license.
+ */
+
 #include <DBIXS.h>
 
 #ifdef _MSC_VER
-	#undef close
+# undef close
 #else
-	#undef dNOOP
-	#define dNOOP extern int __attribute__ ((unused)) Perl___notused
+# undef dNOOP
+# define dNOOP extern int __attribute__ ((unused)) Perl___notused
 #endif
 
 #include "Connection.h"
 #include "ParameterMetaData.h"
 
 struct imp_drh_st {
-	dbih_drc_t com; /* MUST be first element in structure */
+    dbih_drc_t com; /* MUST be first element in structure */
 };
 
 struct imp_dbh_st {
-	dbih_dbc_t com; /* MUST be first element in structure */
-	NuoDB::Connection* conn;
+    dbih_dbc_t com; /* MUST be first element in structure */
+    NuoDB::Connection* conn;
 };
 
 struct imp_sth_st {
-	dbih_stc_t com; /* MUST be first element in structure */
-	NuoDB::PreparedStatement *pstmt;
-	NuoDB::ResultSet *rs;
+    dbih_stc_t com; /* MUST be first element in structure */
+    NuoDB::PreparedStatement *pstmt;
+    NuoDB::ResultSet *rs;
 };
 
-#define dbd_init		nuodb_dr_init
-#define dbd_db_login6_sv	nuodb_db_login6_sv
-#define dbd_db_do		nuodb_db_do
-#define dbd_st_prepare_sv	nuodb_st_prepare_sv
-#define dbd_st_fetch		nuodb_st_fetch
-#define dbd_st_destroy		nuodb_st_destroy
-#define dbd_db_destroy		nuodb_db_destroy
-#define dbd_db_disconnect	nuodb_db_disconnect
+#define dbd_init            nuodb_dr_init
+#define dbd_db_login6_sv    nuodb_db_login6_sv
+#define dbd_db_do           nuodb_db_do
+#define dbd_st_prepare_sv   nuodb_st_prepare_sv
+#define dbd_st_fetch        nuodb_st_fetch
+#define dbd_st_destroy      nuodb_st_destroy
+#define dbd_db_destroy      nuodb_db_destroy
+#define dbd_db_disconnect   nuodb_db_disconnect
 
 void do_error (SV *h, int rc, const char *what);
 

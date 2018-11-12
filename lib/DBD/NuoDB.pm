@@ -1,3 +1,6 @@
+# (C) Copyright NuoDB, Inc. 2012-2018
+# Redistribution and use permitted under the terms of the 3-clause BSD license.
+
 package DBD::NuoDB;
 use strict;
 use warnings;
@@ -23,7 +26,7 @@ sub driver {
 	$drh = DBI::_new_drh($class, {
 		'Name'		=> 'NuoDB',
 		'Version'	=> $VERSION,
-		'Attribution'	=> 'Perl DBI DBD NuoDB driver by Philip Stoev <pstoev@nuodb.com>',
+		'Attribution'	=> 'DBI DBD NuoDB driver by NuoDB, Inc.',
 	});
 
 	DBD::NuoDB::db->install_method('x_version');

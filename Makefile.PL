@@ -1,3 +1,6 @@
+# (C) Copyright NuoDB, Inc. 2012-2018
+# Redistribution and use permitted under the terms of the 3-clause BSD license.
+
 use ExtUtils::MakeMaker;
 use DBI::DBD;
 use Getopt::Long;
