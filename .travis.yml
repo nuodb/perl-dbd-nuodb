@@ -10,9 +10,7 @@ env:
     - TZ=America/New_York
     - NUO_ADD_DOMAIN_PASS=yes
     - NUO_START_AGENT=yes
-  matrix:
-    - NUO_VERSION=3.2.2.1
-    - NUO_VERSION=3.3.0.1
+    - NUO_URL=https://download.nuohub.org
 
 notifications:
   recipients:
@@ -21,7 +19,8 @@ notifications:
 before_install:
   - echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/enabled >/dev/null
   - echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/defrag >/dev/null
-  - wget -q "http://download.nuohub.org/nuodb-ce_${NUO_VERSION}_amd64.deb" --output-document=/var/tmp/nuodb.deb
+  - wget -q "$NUO_URL/current_version.txt" -O - | sed -n 's/.*version=\([^|]*\).*/\1/p' > version.txt
+  - wget -q "$NUO_URL/nuodb-ce_$(cat version.txt)_amd64.deb" -O /var/tmp/nuodb.deb
   - sudo dpkg -i /var/tmp/nuodb.deb
 
 install:
