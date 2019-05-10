@@ -11,8 +11,7 @@
 # define dNOOP extern int __attribute__ ((unused)) Perl___notused
 #endif
 
-#include "Connection.h"
-#include "ParameterMetaData.h"
+#include "NuoDB.h"
 
 struct imp_drh_st {
     dbih_drc_t com; /* MUST be first element in structure */
