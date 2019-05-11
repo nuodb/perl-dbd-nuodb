@@ -3,7 +3,6 @@
  */
 
 #include "dbdimp.h"
-#include "ProductVersion.h"
 
 DBISTATE_DECLARE;
 
@@ -32,12 +31,8 @@ int dbd_db_login6_sv(SV *dbh, imp_dbh_t *imp_dbh, SV *dbname, SV *uid, SV *pwd, 
     hv = (HV*) SvRV(sv);
     if (SvTYPE(hv) != SVt_PVHV)
         return FALSE;
-#if NUODB_PRODUCT_VERSION_MAJOR >= 3
-    NuoDB::Connection *conn = NuoDB_createConnection();
-#else
-    NuoDB::Connection *conn = createConnection();
-#endif
 
+    NuoDB::Connection *conn = NuoDB_createConnection();
     if (!conn)
         return FALSE;
 

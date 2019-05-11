@@ -15,7 +15,25 @@ my $opt_result = GetOptions (
 $nuodb_includes = '/opt/nuodb/include' unless defined $nuodb_includes;
 $nuodb_libs = '/opt/nuodb/lib64' unless defined $nuodb_libs;
 
-print "Using: \$nuodb_includes = $nuodb_includes ; \$nuodb_libs = $nuodb_libs\n";
+print "Using: --nuodb-includes='$nuodb_includes' --nuodb-libs='$nuodb_libs'\n";
+
+@nuodb_includes = split(' ', $nuodb_includes);
+@nuodb_libs = split(' ', $nuodb_libs);
+
+@incs = ();
+for (@nuodb_includes) {
+    -d $_ && push(@incs, "-I$_");
+}
+@incs or die "Unable to locate the include directories: $nuodb_includes";
+
+@libs = ();
+for (@nuodb_libs) {
+    -d $_ && push(@libs, $_);
+}
+@libs or die "Unable to locate the library directories: $nuodb_libs";
+$libs = join(' ', map { "-L$_" } @libs);
+$rpath = join(' ', map { "-Xlinker -rpath -Xlinker $_" } @libs);
+
 
 WriteMakefile(
     NAME            => 'DBD::NuoDB',
@@ -26,22 +44,20 @@ WriteMakefile(
     XS              => {'NuoDB.xs' => 'NuoDB.c'},
     C               => ['dbdimp.cpp', 'NuoDB.c'],
     OBJECT          => 'dbdimp.o NuoDB.o',
-    LIBS            => ["-L$nuodb_libs -lNuoRemote"],
+    LIBS            => ["$libs -lNuoRemote"],
     dist            => {
         SUFFIX      => '.gz',
         COMPRESS    => 'gzip -9f'
     },
     realclean       => { FILES => '*.xsi' },
     CONFIGURE       => sub {
-        my $dbi_arch_dir = dbd_dbi_arch_dir();
-        if (exists($opts{INC})) {
-            return {INC => "-I$nuodb_includes -I$dbi_arch_dir $opts{INC}"};
-        } else {
-            return {INC => "-I$nuodb_includes -I$dbi_arch_dir"};
-        }
+        push(@incs, '-I'.dbd_dbi_arch_dir());
+        $incs = join(' ', @incs);
+        $incs .= " $opts{INC}" if exists($opts{INC});
+        return {INC => $incs};
     },
     CC              => $^O eq 'darwin' ? 'clang++' : 'g++',
     LD              => $^O eq 'darwin' ? 'clang++' : 'g++',
-    LDDLFLAGS       => $^O eq 'darwin' ? "-arch x86_64 -bundle -undefined dynamic_lookup -L$nuodb_libs -Xlinker -rpath -Xlinker $nuodb_libs" : '',
-    LDFLAGS         => $^O eq 'darwin' ? "-arch x86_64 -L$nuodb_libs" : '',
+    LDDLFLAGS       => $^O eq 'darwin' ? "-arch x86_64 -bundle -undefined dynamic_lookup $libs $rpath" : '',
+    LDFLAGS         => $^O eq 'darwin' ? "-arch x86_64 $libs" : '',
 );

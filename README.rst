@@ -93,13 +93,14 @@ The following features have been implemented:
 * DSNs in the form dbi:NuoDB:*database@host:port*
 * Schema selection via the "schema" handle attribute
 * Transactions, commit(), rollback() and the AutoCommit handle attribute
-* prepare(), execute(), fetch() as well as the combined convenience functions such as selectall_arrayref()
+* prepare(), execute(), fetch() as well as the combined convenience functions
+  such as selectall_arrayref()
 
 The following have not been implemented yet:
 
 * All result values are returned as strings regardless of the original data type
 * Metadata methods have not been implemented
-* Queries or bind values containing "\0" will most likely be truncated
+* Queries or bind values containing ``\0`` will most likely be truncated
 * Windows has not been tested
 
 References
