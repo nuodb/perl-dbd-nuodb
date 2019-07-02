@@ -152,6 +152,7 @@ AV* dbd_st_fetch(SV *sth, imp_sth_t* imp_sth)
         }
     } catch (NuoDB::SQLException& xcp) {
         do_error(sth, xcp.getSqlcode(), xcp.getText());
+        return Nullav;
     }
 
     av = DBIc_DBISTATE(imp_sth)->get_fbav(imp_sth);
