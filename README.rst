@@ -90,7 +90,7 @@ Known Limitations
 
 The following features have been implemented:
 
-* DSNs in the form dbi:NuoDB:*database@host:port*
+* DSNs in the form dbi:NuoDB:*database@host:port?property=value*
 * Schema selection via the "schema" handle attribute
 * Transactions, commit(), rollback() and the AutoCommit handle attribute
 * prepare(), execute(), fetch() as well as the combined convenience functions
