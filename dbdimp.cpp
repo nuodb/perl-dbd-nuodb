@@ -16,9 +16,10 @@ int dbd_db_login6_sv(SV *dbh, imp_dbh_t *imp_dbh, SV *dbname, SV *uid, SV *pwd, 
 {
 
     SV* sv;
-    SV** svp;
     HV* hv;
-    STRLEN db_len;
+    char* key;
+    STRLEN len;
+    I32 cnt, i;
 
     // Retrieve the private attributes that are stashed in imp_dbh by
     // DBI::NuoDB::connect
@@ -44,8 +45,12 @@ int dbd_db_login6_sv(SV *dbh, imp_dbh_t *imp_dbh, SV *dbname, SV *uid, SV *pwd, 
     if (SvOK(pwd))
         properties->putValue("password", SvPV_nolen(pwd));
 
-    if ((svp = hv_fetch(hv, "schema", 6, FALSE)))
-        properties->putValue("schema", SvPV(*svp, db_len));
+    cnt = hv_iterinit(hv);
+
+    for (i = 1; i <= cnt; i++) {
+        sv = hv_iternextsv(hv, &key, (I32*) &len);
+        properties->putValue(key, SvPV(sv, len));
+    }
 
     try {
         conn->openDatabase(SvPV_nolen(dbname), properties);

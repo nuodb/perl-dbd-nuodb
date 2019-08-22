@@ -50,6 +50,16 @@ sub connect {
 
 	$private_attr->{schema} = $attr->{schema} if defined $attr->{schema};
 
+	my ($properties) = (split('\?', $dsn))[1];
+        if (defined $properties) {
+		my @properties = split(';', $properties);
+
+		foreach my $property (@properties) {
+			my ($key, $value) = split('=', $property);
+		        $private_attr->{$key} = $value;
+		}
+	}
+
 	my $dbh = DBI::_new_dbh($drh, {}, $private_attr) or return undef;
 	DBD::NuoDB::db::_login($dbh, $dsn, $user, $auth) or return undef;
 
