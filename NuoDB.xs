@@ -37,6 +37,8 @@ int      dbd_st_prepare (SV *sth, imp_sth_t *imp_sth, char *statement, SV *attri
 int      dbd_st_prepare_sv (SV *sth, imp_sth_t *imp_sth, SV *statement, SV *attribs);
 int      dbd_st_rows    (SV *sth, imp_sth_t *imp_sth);
 int      dbd_st_execute (SV *sth, imp_sth_t *imp_sth);
+int      dbd_st_add_batch (SV *sth);
+int      dbd_st_execute_batch (SV *sth);
 AV      *dbd_st_fetch   (SV *sth, imp_sth_t *imp_sth);
 int      dbd_st_finish3 (SV *sth, imp_sth_t *imp_sth, int from_destroy);
 int      dbd_st_finish  (SV *sth, imp_sth_t *imp_sth); /* deprecated */
@@ -95,5 +97,21 @@ x_analyze(sth)
         SV* sth
 CODE:
         RETVAL = dbd_st_analyze(sth);
+OUTPUT:
+        RETVAL
+
+int
+x_add_batch(sth)
+        SV* sth
+CODE:
+        RETVAL = dbd_st_add_batch(sth);
+OUTPUT:
+        RETVAL
+
+int
+x_execute_batch(sth)
+        SV* sth
+CODE:
+        RETVAL = dbd_st_execute_batch(sth);
 OUTPUT:
         RETVAL

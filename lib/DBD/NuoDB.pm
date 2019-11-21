@@ -31,6 +31,8 @@ sub driver {
 
 	DBD::NuoDB::db->install_method('x_version');
 	DBD::NuoDB::st->install_method('x_analyze');
+	DBD::NuoDB::st->install_method('x_add_batch');
+	DBD::NuoDB::st->install_method('x_execute_batch');
 	
 	return $drh;
 }
