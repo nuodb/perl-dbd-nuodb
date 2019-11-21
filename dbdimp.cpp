@@ -364,6 +364,46 @@ int dbd_bind_ph(SV *sth, imp_sth_t *imp_sth, SV *param, SV *value, IV sql_type, 
     return TRUE;
 }
 
+int dbd_st_add_batch(SV *sth)
+{
+    D_imp_sth(sth);
+
+    if (!imp_sth)
+        return FALSE;
+
+    if (!imp_sth->pstmt)
+        return FALSE;
+
+    try {
+        imp_sth->pstmt->addBatch();
+    } catch (NuoDB::SQLException& xcp) {
+        do_error(sth, xcp.getSqlcode(), xcp.getText());
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+int dbd_st_execute_batch(SV *sth)
+{
+    D_imp_sth(sth);
+
+    if (!imp_sth)
+        return FALSE;
+
+    if (!imp_sth->pstmt)
+        return FALSE;
+
+    try {
+        imp_sth->pstmt->executeBatch();
+    } catch (NuoDB::SQLException& xcp) {
+        do_error(sth, xcp.getSqlcode(), xcp.getText());
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
 void dbd_db_destroy(SV* dbh, imp_dbh_t* imp_dbh)
 {
     imp_dbh->conn = NULL;
