@@ -80,7 +80,7 @@ int dbd_st_prepare_sv(SV *sth, imp_sth_t *imp_sth, SV *statement, SV *attribs)
     char *sql = SvPV_nolen(statement);
 
     try {
-        imp_sth->pstmt = imp_dbh->conn->prepareStatement(sql, NuoDB::RETURN_GENERATED_KEYS);
+        imp_sth->pstmt = imp_dbh->conn->prepareStatement(sql);
         DBIc_IMPSET_on(imp_sth);
 
         NuoDB::ParameterMetaData* md = imp_sth->pstmt->getParameterMetaData();
