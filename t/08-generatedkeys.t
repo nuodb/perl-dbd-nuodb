@@ -10,6 +10,6 @@ my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "dba", "goalie", {PrintError => 
 
 $dbh->do('CREATE TABLE t1 (f1 INTEGER GENERATED ALWAYS AS IDENTITY (i_'.(time()).$$.'))');
 my ($id) = $dbh->selectrow_array("INSERT INTO t1 VALUES ( DEFAULT )");
-ok($id == 1);
+ok($DBI::err == 0);
 $dbh->do("DROP TABLE IF EXISTS t1");
 
