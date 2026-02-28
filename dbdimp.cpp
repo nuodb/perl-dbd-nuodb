@@ -10,6 +10,15 @@ void dbd_init(dbistate_t* dbistate)
 {
     DBISTATE_INIT;  /* Initialize the DBI macros  */
     DBIS = dbistate;
+
+    unsigned int major=0, minor=0;
+    const char* runtime = NuoDB_getCppDriverVersion(&major, &minor);
+
+    if (major != NUODB_CPPDRIVER_MAJOR) {
+        croak("DBD::NuoDB: version mismatch: compile-time NuoRemote version %s;"
+              " runtime NuoRemote version %s",
+              NUODB_CPPDRIVER_VERSION, runtime ? runtime : "unknown");
+    }
 }
 
 int dbd_db_login6_sv(SV* dbh, imp_dbh_t* imp_dbh, SV* dbname, SV* uid, SV* pwd, SV* attr)
