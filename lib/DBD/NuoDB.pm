@@ -1,4 +1,4 @@
-# (C) Copyright NuoDB, Inc. 2012-2018
+# (C) Copyright 2012-2026 Dassault Systemes SE.
 # Redistribution and use permitted under the terms of the 3-clause BSD license.
 
 package DBD::NuoDB;
