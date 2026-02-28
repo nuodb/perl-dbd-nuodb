@@ -2,8 +2,10 @@ use strict;
 use Test::More tests => 1;
 use DBI;
 
-my $host = defined $ENV{NUODB_PORT} ? "localhost:".$ENV{NUODB_PORT} : "localhost";
-my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "dba", "goalie", {PrintError => 1, PrintWarn => 0, AutoCommit => 1, schema => 'dbi'});
+use FindBin qw($Bin);
+use lib $Bin;
+use NuoDBTest;
+my $dbh = DBI->connect($dbconnect, $user, $password, {PrintError => 1, PrintWarn => 0, AutoCommit => 1, schema => 'dbi'});
 
 my ($out) = $dbh->selectrow_array("SELECT ".$dbh->quote("Don't")." FROM DUAL");
 ok($out eq "Don't");

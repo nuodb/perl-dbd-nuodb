@@ -2,10 +2,12 @@ use strict;
 use Test::More tests => 8;
 BEGIN { use_ok('DBD::NuoDB') };
 
+use FindBin qw($Bin);
+use lib $Bin;
+use NuoDBTest;
 use DBI;
-my $host = defined $ENV{NUODB_PORT} ? "localhost:".$ENV{NUODB_PORT} : "localhost";
 
-my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "dba", "goalie", {PrintError => 1, RaiseError => 1});
+my $dbh = DBI->connect($dbconnect, $user, $password, {PrintError => 1, RaiseError => 1});
 
 $dbh->do("DROP TABLE IF EXISTS test.t1");
 $dbh->do("CREATE TABLE test.t1 (f1 INTEGER PRIMARY KEY, f2 STRING)");

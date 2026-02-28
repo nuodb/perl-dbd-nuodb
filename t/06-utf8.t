@@ -4,8 +4,10 @@ use DBI;
 use utf8;
 binmode STDERR, ":utf8";
 
-my $host = defined $ENV{NUODB_PORT} ? "localhost:".$ENV{NUODB_PORT} : "localhost";
-my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "dba", "goalie", {PrintError => 0, PrintWarn => 0, AutoCommit => 1, schema => 'dbi'});
+use FindBin qw($Bin);
+use lib $Bin;
+use NuoDBTest;
+my $dbh = DBI->connect($dbconnect, $user, $password, {PrintError => 0, PrintWarn => 0, AutoCommit => 1, schema => 'dbi'});
 
 my $utf8_string = 'Това е текст';
 my ($utf8_out, $utf8_len_chars, $utf8_len_octets) = $dbh->selectrow_array("

@@ -35,35 +35,18 @@ Run the following command to build the module::
 Testing
 -------
 
-The tests included with the module assume that a NuoDB database named ``test``
-exists, with a DBA user ``dba`` and password ``goalie``.
+The tests included with the module assume that a NuoDB database is already
+running.  If you don't have a NuoDB domain available you can create one using
+the Docker image on DockerHub.  See `Quick Start Guides / Docker`_.
 
-For details on starting and managing NuoDB databases, see the Documentation_.
-
-If you have not configured and started a NuoDB Broker on your host, do so::
-
-    DOMAIN_PWD=bird
-    printf '\ndomainPassword = '"$DOMAIN_PWD"'\n' | sudo tee -a "$NUODB_HOME"/etc/default.properties >/dev/null
-    sudo "$NUODB_HOME"/etc/nuoagent start
-
-If you have already configured and started a NuoDB Broker, replace
-``$DOMAIN_PWD`` with your domain password in the commands below.
-
-Create a database ``test``::
-
-    "$NUODB_HOME"/bin/nuodbmgr --broker localhost --password "$DOMAIN_PWD" \
-        --command "start process sm database test host localhost archive /tmp/nuoarchive initialize true"
-    "$NUODB_HOME"/bin/nuodbmgr --broker localhost --password "$DOMAIN_PWD" \
-        --command "start process te database test host localhost options '--dba-user dba --dba-password goalie'"
+The tests use the values of the environment variables ``NUODB_HOST``,
+``NUODB_DBNAME``, ``NUODB_USER``, and ``NUODB_PASSWORD`` to access the
+database.  The default values for these variables if not set are
+``localhost``, ``test``, ``dba``, and ``goalie`` respectively.
 
 Once the database is running, test the module with::
 
     make test
-
-Be sure to shut down the database once your testing is complete::
-
-    "$NUODB_HOME"/bin/nuodbmgr --broker localhost --password "$DOMAIN_PWD" \
-        --command "shutdown database database test"
 
 Installing
 ----------
@@ -80,7 +63,8 @@ Here is an example:
 .. code:: perl
 
     use DBI;
-    my $dbh = DBI->connect("dbi:NuoDB:$database\@$host:$port", $username, $password, {schema => $schema});
+    my $dbh = DBI->connect("dbi:NuoDB:$database\@$host:$port",
+                           $username, $password, {schema => $schema});
     my $sth = $dbh->prepare("SELECT 'one' FROM DUAL");
     $sth->execute();
     my ($value) = $sth->fetchrow_array();
@@ -113,8 +97,9 @@ References
 License
 =======
 
-The NuoDB DBI DBD driver is  licensed under a `BSD 3-Clause License <https://github.com/nuodb/perl-dbd-nuodb/blob/master/LICENSE>`_.
+The NuoDB DBI DBD driver is licensed under a `BSD 3-Clause License <https://github.com/nuodb/perl-dbd-nuodb/blob/master/LICENSE>`_.
 
 .. _NuoDB: https://www.nuodb.com/
-.. _Documentation: https://doc.nuodb.com/Latest/Default.htm
+.. _Documentation: https://doc.nuodb.com/nuodb/latest/introduction-to-nuodb/
 .. _Perl DBI: https://dbi.perl.org/
+.. _Quick Start Guides / Docker: https://doc.nuodb.com/nuodb/latest/quick-start-guide/docker/

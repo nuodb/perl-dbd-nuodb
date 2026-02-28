@@ -1,10 +1,12 @@
 use strict;
 use Test::More tests => 5;
 
+use FindBin qw($Bin);
+use lib $Bin;
+use NuoDBTest;
 use DBI;
-my $host = defined $ENV{NUODB_PORT} ? "localhost:".$ENV{NUODB_PORT} : "localhost";
 
-my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "dba", "goalie", {PrintError => 0, RaiseError => 0});
+my $dbh = DBI->connect($dbconnect, $user, $password, {PrintError => 0, RaiseError => 0});
 $dbh->disconnect();
 
 my $result = $dbh->selectall_arrayref("USE test");

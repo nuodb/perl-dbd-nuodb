@@ -1,11 +1,12 @@
 use strict;
 use Test::More tests => 2;
 
+use FindBin qw($Bin);
+use lib $Bin;
+use NuoDBTest;
 use DBI;
 
-my $host = defined $ENV{NUODB_PORT} ? "localhost:".$ENV{NUODB_PORT} : "localhost";
-
-my $dbh = DBI->connect('dbi:NuoDB:test@'.$host, "dba", "goalie", {PrintError => 0, RaiseError => 0, schema => 'dbi' });
+my $dbh = DBI->connect($dbconnect, $user, $password, {PrintError => 0, RaiseError => 0, schema => 'dbi' });
 
 my $version1 = DBD::NuoDB::db::version($dbh);
 ok(length($version1) > 1);
