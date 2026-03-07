@@ -13,16 +13,19 @@
 
 #include "NuoDB.h"
 
-struct imp_drh_st {
+struct imp_drh_st
+{
     dbih_drc_t com; /* MUST be first element in structure */
 };
 
-struct imp_dbh_st {
+struct imp_dbh_st
+{
     dbih_dbc_t com; /* MUST be first element in structure */
     NuoDB::Connection* conn;
 };
 
-struct imp_sth_st {
+struct imp_sth_st
+{
     dbih_stc_t com; /* MUST be first element in structure */
     NuoDB::PreparedStatement *pstmt;
     NuoDB::ResultSet *rs;
@@ -37,7 +40,7 @@ struct imp_sth_st {
 #define dbd_db_destroy      nuodb_db_destroy
 #define dbd_db_disconnect   nuodb_db_disconnect
 
-void do_error (SV *h, int rc, const char *what);
+void do_error(SV* h, int rc, const char* what);
 
-const char * dbd_st_analyze(SV *sth);
-const char * dbd_db_version(SV *dbh);
+const char* dbd_st_analyze(SV* sth);
+const char* dbd_db_version(SV* dbh);

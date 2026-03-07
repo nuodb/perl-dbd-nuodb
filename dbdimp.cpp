@@ -8,18 +8,18 @@ DBISTATE_DECLARE;
 
 void dbd_init(dbistate_t* dbistate)
 {
-    DBISTATE_INIT;  /*  Initialize the DBI macros  */
+    DBISTATE_INIT;  /* Initialize the DBI macros  */
     DBIS = dbistate;
 }
 
-int dbd_db_login6_sv(SV *dbh, imp_dbh_t *imp_dbh, SV *dbname, SV *uid, SV *pwd, SV *attr)
+int dbd_db_login6_sv(SV* dbh, imp_dbh_t* imp_dbh, SV* dbname, SV* uid, SV* pwd, SV* attr)
 {
 
     SV* sv;
     HV* hv;
     char* key;
     STRLEN len;
-    I32 cnt, i;
+    I32 cnt;
 
     // Retrieve the private attributes that are stashed in imp_dbh by
     // DBI::NuoDB::connect
@@ -30,24 +30,26 @@ int dbd_db_login6_sv(SV *dbh, imp_dbh_t *imp_dbh, SV *dbname, SV *uid, SV *pwd, 
     }
 
     hv = (HV*) SvRV(sv);
-    if (SvTYPE(hv) != SVt_PVHV)
+    if (SvTYPE(hv) != SVt_PVHV) {
         return FALSE;
+    }
 
-    NuoDB::Connection *conn = NuoDB_createConnection();
-    if (!conn)
+    NuoDB::Connection* conn = NuoDB_createConnection();
+    if (!conn) {
         return FALSE;
+    }
 
-    NuoDB::Properties *properties = conn->allocProperties();
+    NuoDB::Properties* properties = conn->allocProperties();
 
-    if (SvOK(uid))
+    if (SvOK(uid)) {
         properties->putValue("user", SvPV_nolen(uid));
+    }
 
-    if (SvOK(pwd))
+    if (SvOK(pwd)) {
         properties->putValue("password", SvPV_nolen(pwd));
+    }
 
-    cnt = hv_iterinit(hv);
-
-    for (i = 1; i <= cnt; i++) {
+    for (cnt = hv_iterinit(hv); cnt > 0; --cnt) {
         sv = hv_iternextsv(hv, &key, (I32*) &len);
         properties->putValue(key, SvPV(sv, len));
     }
@@ -68,7 +70,7 @@ int dbd_db_login6_sv(SV *dbh, imp_dbh_t *imp_dbh, SV *dbname, SV *uid, SV *pwd, 
     return TRUE;
 }
 
-int dbd_st_prepare_sv(SV *sth, imp_sth_t *imp_sth, SV *statement, SV *attribs)
+int dbd_st_prepare_sv(SV* sth, imp_sth_t* imp_sth, SV* statement, SV* attribs)
 {
     D_imp_dbh_from_sth;
 
@@ -77,7 +79,7 @@ int dbd_st_prepare_sv(SV *sth, imp_sth_t *imp_sth, SV *statement, SV *attribs)
         return FALSE;
     }
 
-    char *sql = SvPV_nolen(statement);
+    char* sql = SvPV_nolen(statement);
 
     try {
         imp_sth->pstmt = imp_dbh->conn->prepareStatement(sql);
@@ -117,10 +119,11 @@ int dbd_st_execute(SV* sth, imp_sth_t* imp_sth)
             imp_sth->rs = imp_sth->pstmt->getGeneratedKeys();
         }
 
-        if (!imp_sth->rs)
+        if (!imp_sth->rs) {
             return FALSE;
+        }
 
-        NuoDB::ResultSetMetaData *md = imp_sth->rs->getMetaData();
+        NuoDB::ResultSetMetaData* md = imp_sth->rs->getMetaData();
         DBIc_NUM_FIELDS(imp_sth) = md->getColumnCount();
     } catch (NuoDB::SQLException& xcp) {
         do_error(sth, xcp.getSqlcode(), xcp.getText());
@@ -130,7 +133,7 @@ int dbd_st_execute(SV* sth, imp_sth_t* imp_sth)
     return TRUE;
 }
 
-AV* dbd_st_fetch(SV *sth, imp_sth_t* imp_sth)
+AV* dbd_st_fetch(SV* sth, imp_sth_t* imp_sth)
 {
     AV* av;
     int i;
@@ -142,7 +145,7 @@ AV* dbd_st_fetch(SV *sth, imp_sth_t* imp_sth)
         return Nullav;
     }
 
-    NuoDB::ResultSet *rs = imp_sth->rs;
+    NuoDB::ResultSet* rs = imp_sth->rs;
 
     if (!rs) {
         return Nullav;
@@ -162,10 +165,10 @@ AV* dbd_st_fetch(SV *sth, imp_sth_t* imp_sth)
 
     av = DBIc_DBISTATE(imp_sth)->get_fbav(imp_sth);
 
-    for (i = 0; i < numFields; i++) {
-        SV *sv = AvARRAY(av)[i];
+    for (i = 0; i < numFields; ++i) {
+        SV* sv = AvARRAY(av)[i];
 
-        const char * str = rs->getString(i + 1);
+        const char* str = rs->getString(i + 1);
 
         if (rs->wasNull()) {
             (void) SvOK_off(sv);
@@ -178,16 +181,18 @@ AV* dbd_st_fetch(SV *sth, imp_sth_t* imp_sth)
     return av;
 }
 
-void dbd_st_destroy(SV *sth, imp_sth_t *imp_sth)
+void dbd_st_destroy(SV* sth, imp_sth_t* imp_sth)
 {
     D_imp_dbh_from_sth;
 
     try {
-        if (imp_dbh->conn && imp_sth->rs)
+        if (imp_dbh->conn && imp_sth->rs){
             imp_sth->rs->close();
+        }
 
-        if (imp_dbh->conn && imp_sth->pstmt)
+        if (imp_dbh->conn && imp_sth->pstmt) {
             imp_sth->pstmt->close();
+        }
 
     } catch (NuoDB::SQLException& xcp) {
         do_error(sth, xcp.getSqlcode(), xcp.getText());
@@ -201,7 +206,7 @@ int dbd_st_finish(SV* sth, imp_sth_t* imp_sth)
     return TRUE;
 }
 
-const char * dbd_st_analyze(SV *sth)
+const char* dbd_st_analyze(SV* sth)
 {
     D_imp_sth(sth);
 
@@ -210,7 +215,7 @@ const char * dbd_st_analyze(SV *sth)
         return NULL;
     }
 
-    // 2 = RemPreparedStatement::AnalyzeTree but RemPreparedStatement.h depends on Platform/LinkedList.h , so can not be included
+    // 2 = RemPreparedStatement::AnalyzeTree
 
     try {
         return imp_sth->pstmt->analyze(2);
@@ -255,10 +260,10 @@ int dbd_db_rollback(SV* dbh, imp_dbh_t* imp_dbh)
     return TRUE;
 }
 
-SV* dbd_db_FETCH_attrib(SV *dbh, imp_dbh_t *imp_dbh, SV *keysv)
+SV* dbd_db_FETCH_attrib(SV* dbh, imp_dbh_t* imp_dbh, SV* keysv)
 {
     STRLEN kl;
-    char *key = SvPV(keysv, kl);
+    char* key = SvPV(keysv, kl);
 
     if (kl==10 && strEQ(key, "AutoCommit")) {
         return sv_2mortal(boolSV(DBIc_has(imp_dbh, DBIcf_AutoCommit)));
@@ -270,7 +275,7 @@ SV* dbd_db_FETCH_attrib(SV *dbh, imp_dbh_t *imp_dbh, SV *keysv)
 int dbd_db_STORE_attrib(SV* dbh, imp_dbh_t* imp_dbh, SV* keysv, SV* valuesv)
 {
     STRLEN kl;
-    char *key = SvPV(keysv, kl);
+    char* key = SvPV(keysv, kl);
     bool bool_value = SvTRUE(valuesv);
 
     if (kl==10 && strEQ(key, "AutoCommit")) {
@@ -298,26 +303,27 @@ int dbd_db_STORE_attrib(SV* dbh, imp_dbh_t* imp_dbh, SV* keysv, SV* valuesv)
     return TRUE;
 }
 
-SV* dbd_st_FETCH_attrib(SV *sth, imp_sth_t *imp_sth, SV *keysv)
+SV* dbd_st_FETCH_attrib(SV* sth, imp_sth_t* imp_sth, SV* keysv)
 {
     return Nullsv;
 }
 
-int dbd_st_STORE_attrib(SV *sth, imp_sth_t *imp_sth, SV *keysv, SV *valuesv)
+int dbd_st_STORE_attrib(SV* sth, imp_sth_t* imp_sth, SV* keysv, SV* valuesv)
 {
     return FALSE;
 }
 
 
-int dbd_st_blob_read(SV *sth, imp_sth_t *imp_sth, int field, long offset, long len, SV *destrv, long destoffset)
+int dbd_st_blob_read(SV* sth, imp_sth_t* imp_sth, int field, long offset, long len, SV* destrv, long destoffset)
 {
     return FALSE;
 }
 
 int dbd_db_disconnect(SV* dbh, imp_dbh_t* imp_dbh)
 {
-    if (!imp_dbh->conn)
+    if (!imp_dbh->conn) {
         return FALSE;
+    }
 
     try {
         imp_dbh->conn->close();
@@ -330,20 +336,23 @@ int dbd_db_disconnect(SV* dbh, imp_dbh_t* imp_dbh)
     return TRUE;
 }
 
-int dbd_bind_ph(SV *sth, imp_sth_t *imp_sth, SV *param, SV *value, IV sql_type, SV *attribs, int is_inout, IV maxlen)
+int dbd_bind_ph(SV* sth, imp_sth_t* imp_sth, SV* param, SV* value, IV sql_type, SV* attribs, int is_inout, IV maxlen)
 {
     STRLEN value_len;
 
-    if (is_inout)
+    if (is_inout) {
         croak("Can't bind ``lvalue'' mode.");
+    }
 
-    if (!imp_sth)
+    if (!imp_sth) {
         return FALSE;
+    }
 
-    if (!imp_sth->pstmt)
+    if (!imp_sth->pstmt) {
         return FALSE;
+    }
 
-    char * value_str = SvPV(value, value_len);
+    char* value_str = SvPV(value, value_len);
 
     try {
         if (memchr(value_str, 0, value_len)) {
@@ -364,15 +373,17 @@ int dbd_bind_ph(SV *sth, imp_sth_t *imp_sth, SV *param, SV *value, IV sql_type, 
     return TRUE;
 }
 
-int dbd_st_add_batch(SV *sth)
+int dbd_st_add_batch(SV* sth)
 {
     D_imp_sth(sth);
 
-    if (!imp_sth)
+    if (!imp_sth) {
         return FALSE;
+    }
 
-    if (!imp_sth->pstmt)
+    if (!imp_sth->pstmt) {
         return FALSE;
+    }
 
     try {
         imp_sth->pstmt->addBatch();
@@ -384,15 +395,17 @@ int dbd_st_add_batch(SV *sth)
     return TRUE;
 }
 
-int dbd_st_execute_batch(SV *sth)
+int dbd_st_execute_batch(SV* sth)
 {
     D_imp_sth(sth);
 
-    if (!imp_sth)
+    if (!imp_sth) {
         return FALSE;
+    }
 
-    if (!imp_sth->pstmt)
+    if (!imp_sth->pstmt) {
         return FALSE;
+    }
 
     try {
         imp_sth->pstmt->executeBatch();
@@ -410,7 +423,7 @@ void dbd_db_destroy(SV* dbh, imp_dbh_t* imp_dbh)
     DBIc_IMPSET_off(imp_dbh);
 }
 
-const char * dbd_db_version(SV *dbh)
+const char* dbd_db_version(SV* dbh)
 {
     D_imp_dbh(dbh);
 
@@ -419,7 +432,7 @@ const char * dbd_db_version(SV *dbh)
         return NULL;
     }
 
-    NuoDB::DatabaseMetaData *metaData = imp_dbh->conn->getMetaData();
+    NuoDB::DatabaseMetaData* metaData = imp_dbh->conn->getMetaData();
 
     try {
         return metaData->getDatabaseProductVersion();
@@ -438,7 +451,7 @@ void do_error(SV* h, int rc, const char* what)
 
     sv_setiv(DBIc_ERR(imp_xxh), (IV)rc);
 
-    SV *errstr = DBIc_ERRSTR(imp_xxh);
+    SV* errstr = DBIc_ERRSTR(imp_xxh);
 
     SvUTF8_on(errstr);
     sv_setpv(errstr, what);
